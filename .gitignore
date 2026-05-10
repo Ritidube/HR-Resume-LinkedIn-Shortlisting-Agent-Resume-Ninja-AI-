@@ -1,0 +1,51 @@
+# Virtual Environment
+venv/
+.env
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# VS Code
+.vscode/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Build Files
+build/
+dist/
+*.egg-info/
+
+# Secrets
+.env.*
+secrets.json
+
+# Temporary Files
+temp/
+tmp/
+
+# SQLite DB
+*.db
+
+# Model Cache
+.cache/
+hf_cache/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Generated Reports
+report.json
+
+# Large Resume/Test Data (optional)
+data/resume/
