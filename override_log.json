@@ -1,0 +1,20 @@
+[
+  {
+    "candidate_name": "Riti Dubey",
+    "dimension": "education_certs",
+    "original_score": 5.0,
+    "new_score": 3.0,
+    "reason": "Good",
+    "overridden_by": "HR",
+    "timestamp": "2026-05-11T15:19:13.070457"
+  },
+  {
+    "candidate_name": "Rahul Verma",
+    "dimension": "skills_match",
+    "original_score": 6.1,
+    "new_score": 1.0,
+    "reason": "Good",
+    "overridden_by": "HR",
+    "timestamp": "2026-05-11T15:19:34.819970"
+  }
+]

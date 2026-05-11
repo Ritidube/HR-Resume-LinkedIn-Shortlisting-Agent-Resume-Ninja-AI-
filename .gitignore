@@ -1,5 +1,7 @@
 # Virtual Environment
 venv/
+venv1/
+vene_final/
 .env
 
 # Python Cache
@@ -17,6 +19,7 @@ Thumbs.db
 
 # Logs
 *.log
+.llm_cache.json
 
 # Jupyter
 .ipynb_checkpoints/
@@ -40,6 +43,7 @@ tmp/
 # Model Cache
 .cache/
 hf_cache/
+llm_cache.json
 
 # Streamlit
 .streamlit/secrets.toml
