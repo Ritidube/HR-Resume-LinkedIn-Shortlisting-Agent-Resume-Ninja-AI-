@@ -1,0 +1,127 @@
+[
+  {
+    "name": "Riti Dubey",
+    "skills_match": {
+      "score": 7.9,
+      "justification": "Candidate has skills matching 8 out of 10 required skills, including Python, TensorFlow, SQL, REST APIs, Git, and Docker, as well as relevant nice-to-have skills like NLP and Docker (embedding similarity: 78%)"
+    },
+    "experience_relevance": {
+      "score": 5.0,
+      "justification": "Candidate has internship experience in AI/ML domain as an AI Engineer Intern, but falls short of the required 3 years of experience"
+    },
+    "education_certs": {
+      "score": 5.0,
+      "justification": "Candidate meets the minimum education requirement with a B.Tech in Computer Science from Bennett University, but lacks relevant certifications"
+    },
+    "project_portfolio": {
+      "score": 7.5,
+      "justification": "Candidate has a strong relevant portfolio with deployed projects like NiveshSaathi and SQL Injection Detection, showcasing real-world complexity and ML pipeline experience (semantic similarity: 69%)"
+    },
+    "communication_quality": {
+      "score": 0.0,
+      "justification": "Candidate's linkedin_summary is null, providing no evidence of communication quality"
+    },
+    "weighted_total": 5.87,
+    "recommendation": "MAYBE"
+  },
+  {
+    "name": "Arjun Mehta",
+    "skills_match": {
+      "score": 6.2,
+      "justification": "Candidate has Python, REST APIs, Docker, and Git skills which are required for the Senior Machine Learning Engineer role, but lacks direct machine learning skills (embedding similarity: 75%)"
+    },
+    "experience_relevance": {
+      "score": 3.0,
+      "justification": "Candidate has 5 years of experience as a Senior Backend Developer, but it is not directly in the AI/ML domain"
+    },
+    "education_certs": {
+      "score": 5.0,
+      "justification": "Candidate has a B.Tech in Computer Science from IIT Delhi, meeting the minimum education requirement"
+    },
+    "project_portfolio": {
+      "score": 6.1,
+      "justification": "Candidate has 3 projects with decent complexity, including a payment gateway microservice and an automated billing engine, but none directly related to machine learning (semantic similarity: 62%)"
+    },
+    "communication_quality": {
+      "score": 0.0,
+      "justification": "Candidate's linkedin_summary is null, providing no information about their communication quality"
+    },
+    "weighted_total": 4.58,
+    "recommendation": "NO HIRE"
+  },
+  {
+    "name": "Rahul Verma",
+    "skills_match": {
+      "score": 6.1,
+      "justification": "Candidate has Python, Docker, Git, and SQL skills which are required for the Senior Machine Learning Engineer role, but lacks direct experience with Machine Learning, Deep Learning, and related frameworks like TensorFlow and PyTorch (embedding similarity: 72%)"
+    },
+    "experience_relevance": {
+      "score": 3.0,
+      "justification": "Candidate has 4 years of experience as a Backend Engineer, but it is not directly in the AI/ML domain, although the experience with Docker, AWS, and GCP shows some adjacent relevance"
+    },
+    "education_certs": {
+      "score": 5.0,
+      "justification": "Candidate has a B.E in Computer Engineering from BITS Pilani, which meets the minimum education requirement, but lacks relevant certifications"
+    },
+    "project_portfolio": {
+      "score": 6.2,
+      "justification": "Candidate has 2 relevant projects, Order Processing Pipeline and Product Search Engine, which demonstrate decent complexity and some relevance to the role, but are not directly related to Machine Learning (semantic similarity: 65%)"
+    },
+    "communication_quality": {
+      "score": 0.0,
+      "justification": "Candidate's linkedin_summary is null, so it is not possible to evaluate their communication quality"
+    },
+    "weighted_total": 4.57,
+    "recommendation": "NO HIRE"
+  },
+  {
+    "name": "Priya Sharma",
+    "skills_match": {
+      "score": 4.9,
+      "justification": "Candidate has Python, REST APIs, and Git skills which are required for the Senior Machine Learning Engineer role, but lacks key skills like Machine Learning, Deep Learning, and TensorFlow. (embedding similarity: 68%)"
+    },
+    "experience_relevance": {
+      "score": 3.0,
+      "justification": "Candidate has 2 years of experience as a Junior Developer, but it is not in the exact AI/ML domain and does not meet the required 3 years of experience."
+    },
+    "education_certs": {
+      "score": 5.0,
+      "justification": "Candidate has a B.Sc degree in Information Technology which meets the minimum education requirement, but lacks relevant certifications."
+    },
+    "project_portfolio": {
+      "score": 4.5,
+      "justification": "Candidate has 2 projects, CRM Dashboard and Personal Portfolio Site, but they are not directly related to machine learning or AI, and do not demonstrate complex ML pipelines or real-world use cases. (semantic similarity: 60%)"
+    },
+    "communication_quality": {
+      "score": 0.0,
+      "justification": "Candidate's linkedin_summary is null, providing no evidence of their ability to communicate clearly and effectively."
+    },
+    "weighted_total": 3.87,
+    "recommendation": "NO HIRE"
+  },
+  {
+    "name": "Amit Tiwari",
+    "skills_match": {
+      "score": 2.9,
+      "justification": "Candidate's skills are completely unrelated to the required skills for the Senior Machine Learning Engineer role, with no mention of Python, Machine Learning, or any other relevant technical skills. (embedding similarity: 57%)"
+    },
+    "experience_relevance": {
+      "score": 0.0,
+      "justification": "Candidate's experience is in graphic design, which is completely unrelated to the AI/ML domain required for the role."
+    },
+    "education_certs": {
+      "score": 0.0,
+      "justification": "Candidate's education is a B.Des in Visual Communication, which does not meet the minimum requirement of a Bachelor's or Master's degree in a relevant field for the Senior Machine Learning Engineer role."
+    },
+    "project_portfolio": {
+      "score": 2.7,
+      "justification": "Candidate's projects are related to graphic design and UX mockups, with no evidence of projects related to machine learning, deep learning, or any other relevant technical skills. (semantic similarity: 54%)"
+    },
+    "communication_quality": {
+      "score": 0.0,
+      "justification": "Candidate's LinkedIn summary is null, and the project summaries provided are brief and lack clear summaries or quantified achievements."
+    },
+    "weighted_total": 1.41,
+    "recommendation": "NO HIRE"
+  }
+]
