@@ -1,79 +1,3 @@
-# import json
-# from models import JDProfile, CandidateProfile, CandidateResult, DimensionScore
-# from embeddings import skills_similarity, portfolio_similarity
-# from parsers import safe_parse_json
-# from llm_client import CALL_LLM_HERE
-
-# WEIGHTS = {
-#     "skills_match": 0.30,
-#     "experience_relevance": 0.25,
-#     "education_certs": 0.15,
-#     "project_portfolio": 0.20,
-#     "communication_quality": 0.10,
-# }
-
-# SCORE_PROMPT = """You are an HR evaluation engine. Score this candidate ONLY on these 3 dimensions.
-# Return ONLY valid JSON — no markdown, no extra text:
-# {{
-#   "experience_relevance": {{"score": 0, "justification": "one line"}},
-#   "education_certs":      {{"score": 0, "justification": "one line"}},
-#   "communication_quality":{{"score": 0, "justification": "one line"}}
-# }}
-
-# RUBRIC:
-# - experience_relevance: 0=unrelated, 5=adjacent domain, 10=exact domain+seniority (JD needs {min_years}yrs in {domain})
-# - education_certs: 0=does not meet minimum, 5=meets, 10=exceeds+extra certs (JD requires: {edu_req})
-# - communication_quality: judge clarity and structure of resume text itself
-
-# CANDIDATE PROFILE:
-# {candidate_json}
-# """
-
-# def score_candidate(jd: JDProfile, candidate: CandidateProfile) -> CandidateResult:
-#     # Embedding-based scores
-#     skills_sim = skills_similarity(jd, candidate)
-#     portfolio_sim = portfolio_similarity(jd, candidate)
-#     skills_score = round(skills_sim * 10, 1)
-#     portfolio_score = round(portfolio_sim * 10, 1)
-
-#     # LLM-based scores (3 dims in one call)
-#     candidate_summary = candidate.model_dump(exclude={"raw_text"})
-#     prompt = SCORE_PROMPT.format(
-#         min_years=jd.min_years_experience,
-#         domain=jd.domain,
-#         edu_req=jd.education_requirement,
-#         candidate_json=str(candidate_summary),
-#     )
-#     raw = CALL_LLM_HERE(prompt)
-#     llm_scores = safe_parse_json(raw)
-
-#     # Weighted total
-#     dims = {
-#         "skills_match": skills_score,
-#         "experience_relevance": llm_scores["experience_relevance"]["score"],
-#         "education_certs": llm_scores["education_certs"]["score"],
-#         "project_portfolio": portfolio_score,
-#         "communication_quality": llm_scores["communication_quality"]["score"],
-#     }
-#     total = sum(dims[k] * WEIGHTS[k] for k in dims)
-#     rec = "HIRE" if total >= 7.5 else ("MAYBE" if total >= 5.5 else "NO HIRE")
-
-#     return CandidateResult(
-#         name=candidate.name,
-#         skills_match=DimensionScore(
-#             score=skills_score,
-#             justification=f"Embedding similarity: {skills_sim:.0%} vs JD skills"
-#         ),
-#         experience_relevance=DimensionScore(**llm_scores["experience_relevance"]),
-#         education_certs=DimensionScore(**llm_scores["education_certs"]),
-#         project_portfolio=DimensionScore(
-#             score=portfolio_score,
-#             justification=f"Portfolio-JD similarity: {portfolio_sim:.0%}"
-#         ),
-#         communication_quality=DimensionScore(**llm_scores["communication_quality"]),
-#         weighted_total=round(total, 2),
-#         recommendation=rec,
-#     )
 import json
 from models import JDProfile, CandidateProfile, CandidateResult, DimensionScore
 from embeddings import skills_similarity, portfolio_similarity
@@ -88,29 +12,52 @@ WEIGHTS = {
     "communication_quality": 0.10,
 }
 
-# ── Full 5-dimension scoring prompt (one LLM call) ────────────────────────────
-# The JD and candidate objects are passed as compact JSON so the prompt stays
-# small and cheap.  All 5 dimensions are scored in a single round-trip.
-
 SCORE_PROMPT = """\
-You are an HR evaluation assistant. Given a JD object and a candidate object, \
-score the candidate on ALL 5 dimensions below.
+You are a senior HR evaluation assistant. Score this candidate against the JD on ALL 5 dimensions.
 
-RUBRIC:
-- skills_match (0–10): overlap between candidate skills and required/nice-to-have skills
-- experience_relevance (0–10): 0=unrelated domain, 5=adjacent, 10=exact domain+seniority \
-(JD needs {min_years} yrs in {domain})
-- education_and_certs (0–10): 0=does not meet minimum, 5=meets, 10=exceeds+extra certs \
-(JD requires: {edu_req})
-- project_portfolio (0–10): relevance of candidate projects to JD responsibilities
-- communication_quality (0–10): clarity and structure of the resume text itself
+STRICT RUBRIC — follow these anchors exactly:
 
-WEIGHTS (for your reference, do NOT compute weighted_total yourself — just score each dim):
-- skills_match 30%  |  experience_relevance 25%  |  education_and_certs 15%
-- project_portfolio 20%  |  communication_quality 10%
+skills_match (0–10):
+  0 = < 30% skills match
+  5 = 50–70% skills match
+  10 = > 85% skills match (also count related/transferable skills)
 
-For each dimension add a ONE-LINE justification.
-Return STRICTLY this JSON shape, no markdown, no extra keys:
+experience_relevance (0–10):
+  IMPORTANT — internships, freelance, and project-based work COUNT as real experience.
+  A student with strong internships in the right domain should score 4–6, not 0.
+  0  = completely unrelated domain, no relevant work at all
+  3  = some adjacent work or strong personal projects but no internships
+  5  = internship(s) in adjacent domain OR solid project experience in exact domain
+  7  = internship(s) in exact domain, slightly below required years
+  10 = exact domain + full seniority (JD needs {min_years} yrs in {domain})
+
+education_and_certs (0–10):
+  0  = does not meet minimum
+  5  = meets minimum requirement exactly
+  8  = meets minimum + relevant certifications
+  10 = exceeds minimum + multiple strong certifications
+  (JD requires: {edu_req})
+  Note: A B.Tech/B.E. in CS from a reputed university IS a strong education match.
+  Certifications from DeepLearning.AI, Google, AWS, IBM should boost this score.
+
+project_portfolio (0–10):
+  0  = no evidence of projects
+  3  = 1–2 generic or unrelated projects
+  6  = 2–3 relevant projects with decent complexity
+  8  = strong relevant portfolio — deployed apps, ML pipelines, real-world use cases
+  10 = exceptional portfolio directly matching JD responsibilities
+  Note: Count deployed projects, GitHub activity, and real-world complexity.
+
+communication_quality (0–10):
+  0  = poor grammar, unstructured
+  5  = adequate clarity
+  10 = crisp, structured, impactful — clear summaries, quantified achievements
+
+Be FAIR and ACCURATE. Do not penalise candidates for being early-career if their
+skills and projects are genuinely strong. Justify each score in one specific line
+referencing actual candidate details — never write generic justifications.
+
+Return STRICTLY this JSON, no markdown, no extra keys:
 {{
   "skills_match":          {{"score": 0, "justification": ""}},
   "experience_relevance":  {{"score": 0, "justification": ""}},
@@ -127,7 +74,6 @@ Candidate JSON:
 
 
 def _build_jd_summary(jd: JDProfile) -> dict:
-    """Compact JD dict sent to scorer — only fields the LLM needs."""
     return {
         "role_title": jd.title,
         "required_skills": jd.required_skills,
@@ -140,68 +86,110 @@ def _build_jd_summary(jd: JDProfile) -> dict:
 
 
 def _build_candidate_summary(candidate: CandidateProfile) -> dict:
-    """Compact candidate dict sent to scorer — excludes raw_text (PII / tokens)."""
+    """
+    Rich candidate summary — includes certifications, current role, domains,
+    and structured project details so the LLM can score accurately.
+    Excludes raw_text to avoid PII leakage and token bloat.
+    """
+    # Build structured project list: prefer rich project_entries, fall back to flat
+    if candidate.project_entries:
+        projects = [
+            {"title": p.title, "summary": p.summary}
+            for p in candidate.project_entries[:5]
+        ]
+    else:
+        projects = candidate.projects[:5]
+
+    # Build structured education list
+    if candidate.education_entries:
+        education = [
+            {
+                "degree": e.degree,
+                "field": e.field,
+                "institution": e.institution,
+            }
+            for e in candidate.education_entries
+        ]
+    else:
+        education = candidate.education
+
     return {
         "name": candidate.name,
         "current_role": candidate.current_role,
         "total_experience_years": candidate.years_experience,
         "skills": candidate.skills,
+        "certifications": candidate.certifications,   # ← was missing before
         "domains": candidate.domains or candidate.domain_history,
-        "education": candidate.education,
-        "projects": candidate.projects[:5],   # cap at 5 to save tokens
+        "education": education,                        # ← structured now
+        "projects": projects,                          # ← structured now
+        "linkedin_summary": candidate.linkedin_extra,  # ← bonus context if present
     }
 
 
 def score_candidate(jd: JDProfile, candidate: CandidateProfile) -> CandidateResult:
-    # ── Embedding-based scores (fast, no LLM call) ────────────────────────────
+    # ── Embedding-based scores ────────────────────────────────────────────────
     skills_sim    = skills_similarity(jd, candidate)
     portfolio_sim = portfolio_similarity(jd, candidate)
-    skills_score    = round(skills_sim * 10, 1)
-    portfolio_score = round(portfolio_sim * 10, 1)
+    embedding_skills_score    = round(skills_sim * 10, 1)
+    embedding_portfolio_score = round(portfolio_sim * 10, 1)
 
-    # ── LLM-based scores — all 5 dims in ONE call ─────────────────────────────
-    jd_json        = json.dumps(_build_jd_summary(jd),        separators=(",", ":"))
+    # ── LLM scores — all 5 dims in one call ──────────────────────────────────
+    jd_json        = json.dumps(_build_jd_summary(jd), separators=(",", ":"))
     candidate_json = json.dumps(_build_candidate_summary(candidate), separators=(",", ":"))
 
     prompt = SCORE_PROMPT.format(
-        min_years     = jd.min_years_experience,
-        domain        = jd.domain,
-        edu_req       = jd.education_requirement,
-        jd_json       = jd_json,
-        candidate_json= candidate_json,
+        min_years      = jd.min_years_experience,
+        domain         = jd.domain,
+        edu_req        = jd.education_requirement,
+        jd_json        = jd_json,
+        candidate_json = candidate_json,
     )
-    raw       = CALL_LLM_HERE(prompt)
+    raw        = CALL_LLM_HERE(prompt)
     llm_scores = safe_parse_json(raw)
 
-    # ── Merge: prefer embedding scores for skills/portfolio, LLM for the rest ──
-    # (Embedding scores are already computed above; we take LLM's skills/portfolio
-    #  scores only as a fallback if embeddings returned 0.)
-    final_skills_score    = skills_score    or llm_scores["skills_match"]["score"]
-    final_portfolio_score = portfolio_score or llm_scores["project_portfolio"]["score"]
+    # ── Merge strategy ────────────────────────────────────────────────────────
+    # For skills: average embedding + LLM so neither dominates alone.
+    # For portfolio: same averaging — embedding catches semantic similarity,
+    #   LLM catches real-world complexity and deployment evidence.
+    # For experience/education/communication: LLM only (needs reasoning).
+    llm_skills_score    = llm_scores["skills_match"]["score"]
+    llm_portfolio_score = llm_scores["project_portfolio"]["score"]
+
+    # Average embedding and LLM scores (both on 0–10 scale)
+    final_skills_score    = round((embedding_skills_score + llm_skills_score) / 2, 1)
+    final_portfolio_score = round((embedding_portfolio_score + llm_portfolio_score) / 2, 1)
 
     dims = {
-        "skills_match":         final_skills_score,
-        "experience_relevance": llm_scores["experience_relevance"]["score"],
-        "education_certs":      llm_scores["education_and_certs"]["score"],
-        "project_portfolio":    final_portfolio_score,
-        "communication_quality":llm_scores["communication_quality"]["score"],
+        "skills_match":          final_skills_score,
+        "experience_relevance":  llm_scores["experience_relevance"]["score"],
+        "education_certs":       llm_scores["education_and_certs"]["score"],
+        "project_portfolio":     final_portfolio_score,
+        "communication_quality": llm_scores["communication_quality"]["score"],
     }
     total = round(sum(dims[k] * WEIGHTS[k] for k in dims), 2)
     rec   = "HIRE" if total >= 7.5 else ("MAYBE" if total >= 5.5 else "NO HIRE")
+
+    # Build justification strings — combine embedding insight with LLM reasoning
+    skills_just = (
+        f"{llm_scores['skills_match']['justification']} "
+        f"(embedding similarity: {skills_sim:.0%})"
+    )
+    portfolio_just = (
+        f"{llm_scores['project_portfolio']['justification']} "
+        f"(semantic similarity: {portfolio_sim:.0%})"
+    )
 
     return CandidateResult(
         name=candidate.name,
         skills_match=DimensionScore(
             score=final_skills_score,
-            justification=llm_scores["skills_match"]["justification"]
-            or f"Embedding similarity: {skills_sim:.0%} vs JD skills",
+            justification=skills_just,
         ),
         experience_relevance=DimensionScore(**llm_scores["experience_relevance"]),
         education_certs=DimensionScore(**llm_scores["education_and_certs"]),
         project_portfolio=DimensionScore(
             score=final_portfolio_score,
-            justification=llm_scores["project_portfolio"]["justification"]
-            or f"Portfolio-JD similarity: {portfolio_sim:.0%}",
+            justification=portfolio_just,
         ),
         communication_quality=DimensionScore(**llm_scores["communication_quality"]),
         weighted_total=total,
