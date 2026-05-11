@@ -3,6 +3,8 @@
 > An AI-powered agent that evaluates candidates against a Job Description, scores them across 5 weighted dimensions, and produces a ranked shortlist — with a human-in-the-loop override system.
 
 ---
+## LIVE: https://ninja-ai-shortlisting-agent.streamlit.app/
+---
 
 ##  Project Overview
 
